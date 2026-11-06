@@ -1,10 +1,7 @@
 package ru.yandex.practicum.gym;
 
-import com.sun.source.tree.Tree;
-
-import java.lang.reflect.Array;
+import java.sql.Time;
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
 
 public class Timetable {
 
@@ -22,38 +19,24 @@ public class Timetable {
         ArrayList<TrainingSession> trainingSessionsAtTime = trainingSessionsDuringDay.get(
                 trainingSession.getTimeOfDay()) == null? new ArrayList<>(): trainingSessionsDuringDay.get(
                 trainingSession.getTimeOfDay());
-        //проверяем что расписание еще не содержит это же занятие (дупликат)
         if(trainingSessionsAtTime.contains(trainingSession)) return;
 
-        //сохраняем занятие в расписании
-
-        //если у тренера в один день и в одно время добавляется тренировка, то нужно выдать предупреждение и спросить,
-        //хочет ли администратор перезаписать тренировку или отменить добавление
-        //сейчас оно всегда перезаписывается
         trainingSessionsAtTime.add(trainingSession);
         trainingSessionsDuringDay.put(trainingSession.getTimeOfDay(),  trainingSessionsAtTime);
         timetable.put(trainingSession.getDayOfWeek(), trainingSessionsDuringDay);
     }
 
-    public ArrayList<TrainingSession> getTrainingSessionsForDay(DayOfWeek dayOfWeek) {
-        //как реализовать, тоже непонятно, но сложность должна быть О(1)*
-        //*если для решения этой задачи достаточно возвращать TreeMap, то сложность будет O(1)
-        //если возвращаем список (для удобства пользователя), то сложность будет O(n), где n-количество тренировок в день
-        if(timetable.get(dayOfWeek) == null) return new ArrayList<>();
-        ArrayList<TrainingSession> trainings = new ArrayList<>();
-        for(TimeOfDay time: timetable.get(dayOfWeek).keySet()){
-           trainings.addAll(timetable.get(dayOfWeek).get(time));
-        }
-        return trainings;
+    public TreeMap<TimeOfDay, ArrayList<TrainingSession>> getTrainingSessionsForDay(DayOfWeek dayOfWeek) {
+        if(timetable.get(dayOfWeek) == null) return new TreeMap<>();
+        return timetable.get(dayOfWeek);
     }
 
-    public ArrayList<TrainingSession> getTrainingSessionsForDayAndTime(DayOfWeek dayOfWeek, TimeOfDay timeOfDay) {
-        //как реализовать, тоже непонятно, но сложность должна быть О(1)
-        if(timetable.get(dayOfWeek) == null) return new ArrayList<>();
-        if(timetable.get(dayOfWeek).get(timeOfDay) == null) return new ArrayList<>();
-        ArrayList<TrainingSession> trainings = new ArrayList<>();
-        trainings.addAll(timetable.get(dayOfWeek).get(timeOfDay));
-        return trainings;
+    public List<TrainingSession> getTrainingSessionsForDayAndTime(DayOfWeek dayOfWeek, TimeOfDay timeOfDay) {
+        TreeMap<TimeOfDay, ArrayList<TrainingSession>> trainingsForDay = timetable.get(dayOfWeek);
+        if (trainingsForDay == null) {
+            return Collections.emptyList();
+        }
+        return trainingsForDay.getOrDefault(timeOfDay, new ArrayList<>());
     }
 
     public LinkedHashMap<Coach, Integer> getCountbyCoaches(){

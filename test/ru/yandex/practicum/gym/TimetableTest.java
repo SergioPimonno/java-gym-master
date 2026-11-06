@@ -3,7 +3,6 @@ package ru.yandex.practicum.gym;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Time;
 import java.util.*;
 
 public class TimetableTest {
@@ -25,7 +24,9 @@ public class TimetableTest {
         Assertions.assertTrue(timetable.getTrainingSessionsForDay(DayOfWeek.TUESDAY).isEmpty());
         //Проверили, что за вторник не вернулось занятий
 
-        Assertions.assertEquals(List.of(singleTrainingSession), timetable.getTrainingSessionsForDay(DayOfWeek.MONDAY));
+        TreeMap<TimeOfDay, List<TrainingSession>> checkMap = new TreeMap<>();
+        checkMap.put(singleTrainingSession.getTimeOfDay(), List.of(singleTrainingSession));
+        Assertions.assertEquals(checkMap,timetable.getTrainingSessionsForDay(DayOfWeek.MONDAY));
         //Проверили, что за понедельник вернулось именно то занятие, которое добавили
     }
 
@@ -56,7 +57,9 @@ public class TimetableTest {
         Assertions.assertEquals(1, timetable.getTrainingSessionsForDay(DayOfWeek.MONDAY).size());
         // Проверили, что за понедельник вернулось одно занятие
 
-        Assertions.assertEquals(List.of(mondayChildTrainingSession), timetable.getTrainingSessionsForDay(DayOfWeek.MONDAY));
+        TreeMap<TimeOfDay, List<TrainingSession>> checkMap = new TreeMap<>();
+        checkMap.put(mondayChildTrainingSession.getTimeOfDay(), List.of(mondayChildTrainingSession));
+        Assertions.assertEquals(checkMap, timetable.getTrainingSessionsForDay(DayOfWeek.MONDAY));
         //Проверили, что за понедельник вернулось именно то занятие, которое добавили
 
         Timetable correctTimetableForThursday = new Timetable();
@@ -66,8 +69,10 @@ public class TimetableTest {
                 timetable.getTrainingSessionsForDay(DayOfWeek.THURSDAY));
         // Проверили, что за четверг вернулось два занятия в правильном порядке: сначала в 13:00, потом в 20:00
 
-        Assertions.assertEquals(List.of(thursdayChildTrainingSession, thursdayAdultTrainingSession),
-                timetable.getTrainingSessionsForDay(DayOfWeek.THURSDAY));
+        checkMap.clear();
+        checkMap.put(thursdayChildTrainingSession.getTimeOfDay(), List.of(thursdayChildTrainingSession));
+        checkMap.put(thursdayAdultTrainingSession.getTimeOfDay(), List.of(thursdayAdultTrainingSession));
+        Assertions.assertEquals(checkMap, timetable.getTrainingSessionsForDay(DayOfWeek.THURSDAY));
         // Проверили, что за четверг вернулись те самые два занятия в правильном порядке: сначала в 13:00, потом в 20:00
         //избыточный тест?
 
@@ -86,7 +91,6 @@ public class TimetableTest {
 
         timetable.addNewTrainingSession(singleTrainingSession);
 
-
         Assertions.assertEquals(1, timetable.getTrainingSessionsForDayAndTime(DayOfWeek.MONDAY,
                 new TimeOfDay(13, 00)).size());
         //Проверили, что за понедельник в 13:00 вернулось одно занятие
@@ -99,7 +103,7 @@ public class TimetableTest {
     @Test
     void testGetEmptyListFromEmptyTimeTableByGetTrainingSessionForDayMethod(){
         Timetable timetable = new Timetable();
-        Assertions.assertEquals(new ArrayList<>(), timetable.getTrainingSessionsForDay(DayOfWeek.MONDAY));
+        Assertions.assertEquals(new HashMap<>(), timetable.getTrainingSessionsForDay(DayOfWeek.MONDAY));
         //проверили что пустое расписание не выдаст ошибку при отсутствии содержимого и вернет пустой список
     }
     @Test
@@ -263,7 +267,9 @@ public class TimetableTest {
         Assertions.assertTrue(timetable.getTrainingSessionsForDay(DayOfWeek.TUESDAY).isEmpty());
         //Проверили, что за вторник не вернулось занятий
 
-        Assertions.assertEquals(List.of(singleTrainingSession), timetable.getTrainingSessionsForDay(DayOfWeek.MONDAY));
+        TreeMap<TimeOfDay, List<TrainingSession>> checkMap = new TreeMap<>();
+        checkMap.put(singleTrainingSession.getTimeOfDay(), List.of(singleTrainingSession));
+        Assertions.assertEquals(checkMap, timetable.getTrainingSessionsForDay(DayOfWeek.MONDAY));
         //Проверили, что за понедельник вернулось именно то занятие, которое добавили
     }
 
@@ -287,8 +293,11 @@ public class TimetableTest {
         timetable.addNewTrainingSession(mondayChildTrainingSession14);
         timetable.addNewTrainingSession(mondayAdultTrainingSession);
 
-        Assertions.assertEquals(List.of(mondayChildTrainingSession13, mondayChildTrainingSession14,
-                mondayAdultTrainingSession), timetable.getTrainingSessionsForDay(DayOfWeek.MONDAY));
+        TreeMap<TimeOfDay, List<TrainingSession>> checkMap = new TreeMap<>();
+        checkMap.put(mondayChildTrainingSession13.getTimeOfDay(), List.of(mondayChildTrainingSession13));
+        checkMap.put(mondayAdultTrainingSession.getTimeOfDay(), List.of(mondayChildTrainingSession14,
+                mondayAdultTrainingSession));
+        Assertions.assertEquals(checkMap, timetable.getTrainingSessionsForDay(DayOfWeek.MONDAY));
         //Проверили, что за понедельник вернулось именно то занятие, которое добавили
     }
 
